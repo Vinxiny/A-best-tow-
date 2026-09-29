@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#D92B2B" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="description" content="A Best Towing — 24/7 towing & roadside assistance in Houston, TX." />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <title>A Best Towing | Houston</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            asphalt: "#16171A",
+            tarmac: "#0B0C0E",
+            warn: "#D92B2B",
+            hazard: "#F2A93B",
+            silver: "#C9CDD3",
+            headlight: "#F5F4F1"
+          },
+          fontFamily: {
+            display: ["Barlow Condensed", "system-ui", "sans-serif"],
+            sans: ["Inter", "system-ui", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    html, body { height: 100%; overscroll-behavior: none; }
+    body {
+      background: #16171A;
+      color: #F5F4F1;
+      font-family: Inter, system-ui, sans-serif;
+      margin: 0;
+    }
+
+    .press { transition: transform 0.12s ease, opacity 0.12s ease; }
+    .press:active { transform: scale(0.97); opacity: 0.9; }
+
+    /* Hero photo + gradient */
+    .hero {
+      position: relative;
+      min-height: 280px;
+      background: #0B0C0E url("./photos/truck1.jpg") center/cover no-repeat;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(11,12,14,0.55) 0%,
+        rgba(11,12,14,0.75) 45%,
+        rgba(22,23,26,0.97) 100%
+      );
+    }
+    .hero-content { position: relative; z-index: 1; }
+
+    /* Instrument cluster — the one bold moment */
+    .cluster {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0;
+      background: #121316;
+      border: 1px solid rgba(201,205,211,0.12);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .gauge {
+      padding: 1.1rem 0.5rem;
+      text-align: center;
+      position: relative;
+    }
+    .gauge + .gauge::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 18%;
+      bottom: 18%;
+      width: 1px;
+      background: rgba(201,205,211,0.18);
+    }
+    .gauge-value {
+      font-family: "Barlow Condensed", system-ui, sans-serif;
+      font-weight: 800;
+      font-size: 2rem;
+      line-height: 1;
+      color: #F2A93B;
+      letter-spacing: -0.02em;
+    }
+    .gauge-label {
+      margin-top: 0.35rem;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #C9CDD3;
+    }
+
+    /* Horizontal strips */
+    .h-strip {
+      display: flex;
+      gap: 0.65rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 2px;
+    }
+    .h-strip::-webkit-scrollbar { display: none; }
+    .h-strip img {
+      scroll-snap-align: start;
+      flex-shrink: 0;
+      width: 148px;
+      height: 104px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid rgba(201,205,211,0.1);
+    }
+    .review-card {
+      scroll-snap-align: start;
+      flex-shrink: 0;
+      width: 260px;
+      background: #1A1B1F;
+      border: 1px solid rgba(201,205,211,0.1);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+
+    /* Persistent bottom bar */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      max-width: 32rem;
+      margin: 0 auto;
+      background: #121316;
+      border-top: 1px solid rgba(201,205,211,0.12);
+      padding: 0.65rem 1rem;
+      padding-bottom: max(0.65rem, env(safe-area-inset-bottom));
+      display: flex;
+      gap: 0.6rem;
+    }
+    .btn-call {
+      flex: 1.4;
+      height: 52px;
+      background: #D92B2B;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: none;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(217, 43, 43, 0.3);
+    }
+    .btn-loc {
+      flex: 1;
+      height: 52px;
+      background: transparent;
+      color: #F5F4F1;
+      font-weight: 600;
+      font-size: 0.8rem;
+      border: 1px solid rgba(201,205,211,0.25);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+    }
+
+    /* Coordinates readout — trip computer style */
+    .coords-readout {
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #F2A93B;
+      letter-spacing: 0.02em;
+    }
+
+    .safe-top { padding-top: max(0.6rem, env(safe-area-inset-top)); }
+    .main-pad { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
+
+    #softAsk {
+      transform: translateY(110%);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    #softAsk.show { transform: translateY(0); }
+
+    #locPanel { display: none; }
+    #locPanel.open { display: block; }
+  </style>
+</head>
+<body class="h-full">
+
+  <div class="min-h-full max-w-lg mx-auto relative">
+
+    <!-- HERO: full-bleed job photo -->
+    <section class="hero safe-top">
+      <div class="hero-content px-4 pt-3 pb-8">
+        <div class="flex items-center gap-3 mb-8">
+          <div class="h-10 w-10 rounded-lg overflow-hidden bg-black border border-white/15 flex items-center justify-center shrink-0">
+            <img src="./icons/logo.png" alt="A Best Towing" class="h-8 w-8 object-contain" />
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-headlight leading-tight">A Best Towing</p>
+            <p class="text-[11px] text-silver">Houston · Open 24/7</p>
+          </div>
+        </div>
+        <h1 class="font-display font-extrabold text-[2.15rem] leading-[1.05] tracking-tight text-headlight max-w-[16ch]">
+          Stranded in Houston?<br />
+          <span class="text-hazard">We’re already on the way.</span>
+        </h1>
+      </div>
+    </section>
+
+    <main class="px-4 pt-5 main-pad space-y-6">
+
+      <!-- INSTRUMENT CLUSTER — the one bold moment -->
+      <div class="cluster">
+        <div class="gauge">
+          <div class="gauge-value">10+</div>
+          <div class="gauge-label">Years</div>
+        </div>
+        <div class="gauge">
+          <div class="gauge-value">24/7</div>
+          <div class="gauge-label">Response</div>
+        </div>
+        <div class="gauge">
+          <div class="gauge-value">A+</div>
+          <div class="gauge-label">BBB</div>
+        </div>
+      </div>
+
+      <!-- Badges -->
+      <div class="flex items-center justify-center gap-5">
+        <img src="./photos/google-badge.png" alt="Google Guaranteed" class="h-11 w-auto object-contain opacity-90" />
+        <img src="./photos/top-rated.png" alt="Top Rated" class="h-11 w-auto object-contain opacity-90" />
+      </div>
+
+      <!-- Real jobs photo strip -->
+      <div>
+        <p class="text-[11px] font-semibold text-silver mb-2.5 tracking-wide">Real jobs across Houston</p>
+        <div class="h-strip">
+          <img src="./photos/truck1.jpg" alt="Flatbed with gray car" loading="lazy" />
+          <img src="./photos/corvette.jpg" alt="Blue Corvette on flatbed" loading="lazy" />
+          <img src="./photos/blue-car.jpg" alt="Blue classic car" loading="lazy" />
+          <img src="./photos/yellow.jpg" alt="Yellow sports car" loading="lazy" />
+          <img src="./photos/boat.jpg" alt="Boat recovery" loading="lazy" />
+          <img src="./photos/night.jpg" alt="Night recovery" loading="lazy" />
+        </div>
+      </div>
+
+      <!-- Reviews — distinct horizontal strip -->
+      <div>
+        <p class="text-[11px] font-semibold text-silver mb-2.5 tracking-wide">What drivers say</p>
+        <div class="h-strip">
+          <div class="review-card">
+            <div class="flex gap-0.5 text-hazard mb-2">
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+            </div>
+            <p class="text-sm text-headlight/90 leading-snug">“Omar showed up in 10 minutes when others gave a 2-hour ETA. Respectful and reliable.”</p>
+            <p class="mt-2 text-[11px] text-silver">Eric G.</p>
+          </div>
+          <div class="review-card">
+            <div class="flex gap-0.5 text-hazard mb-2">
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+            </div>
+            <p class="text-sm text-headlight/90 leading-snug">“He did what he said — 10 minutes and more than I expected. Safe. Recommend to all.”</p>
+            <p class="mt-2 text-[11px] text-silver">Natasha L.</p>
+          </div>
+          <div class="review-card">
+            <div class="flex gap-0.5 text-hazard mb-2">
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+            </div>
+            <p class="text-sm text-headlight/90 leading-snug">“Two tows in 5 days. Friendly, fair price, and a ride to my location. 100% recommend.”</p>
+            <p class="mt-2 text-[11px] text-silver">Peter I.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location panel (opens from bottom bar) -->
+      <div id="locPanel" class="rounded-xl bg-[#1A1B1F] border border-silver/10 p-4 space-y-3">
+        <p class="text-[11px] font-semibold text-silver tracking-wide">GPS coordinates</p>
+        <p id="coordsText" class="coords-readout break-all"></p>
+        <p class="text-xs text-silver/80">Read aloud to dispatch, or text with one tap.</p>
+        <a id="smsLink" href="#" class="press flex items-center justify-center gap-2 w-full h-11 rounded-lg border border-hazard/40 text-hazard text-sm font-semibold">
+          <i data-lucide="message-square" class="w-4 h-4"></i>
+          Text My Location
+        </a>
+        <p id="locError" class="hidden text-sm text-silver"></p>
+        <p id="locLoading" class="hidden text-sm text-silver flex items-center gap-2">
+          <svg class="animate-spin h-4 w-4 text-hazard" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+          Getting GPS fix…
+        </p>
+      </div>
+
+      <!-- Services -->
+      <div>
+        <p class="text-[11px] font-semibold text-silver mb-2.5 tracking-wide">What we handle</p>
+        <div class="flex flex-wrap gap-2 text-xs">
+          <span class="px-2.5 py-1 rounded-md bg-white/5 text-headlight/80 border border-white/5">Car Towing</span>
+          <span class="px-2.5 py-1 rounded-md bg-white/5 text-headlight/80 border border-white/5">Flatbed</span>
+          <span class="px-2.5 py-1 rounded-md bg-white/5 text-headlight/80 border border-white/5">Jump Starts</span>
+          <span class="px-2.5 py-1 rounded-md bg-white/5 text-headlight/80 border border-white/5">Lockouts</span>
+          <span class="px-2.5 py-1 rounded-md bg-white/5 text-headlight/80 border border-white/5">Flat Tires</span>
+          <span class="px-2.5 py-1 rounded-md bg-white/5 text-headlight/80 border border-white/5">Heavy Duty</span>
+          <span class="px-2.5 py-1 rounded-md bg-white/5 text-headlight/80 border border-white/5">Motorcycle</span>
+          <span class="px-2.5 py-1 rounded-md bg-white/5 text-headlight/80 border border-white/5">RV & Boat</span>
+        </div>
+      </div>
+
+      <!-- Install -->
+      <div class="rounded-xl bg-[#1A1B1F] border border-silver/10 p-4">
+        <div class="flex items-start gap-3">
+          <div class="h-9 w-9 rounded-lg bg-warn/15 flex items-center justify-center shrink-0">
+            <i data-lucide="download" class="w-4.5 h-4.5 text-warn"></i>
+          </div>
+          <div class="flex-1">
+            <p class="text-sm font-semibold text-headlight">Add to Home Screen</p>
+            <p class="text-xs text-silver mt-0.5">Next time you need a tow — just tap the icon.</p>
+          </div>
+        </div>
+        <button id="installBtn" type="button" class="press hidden mt-3 w-full h-11 rounded-lg bg-warn text-white text-sm font-bold">
+          Install App
+        </button>
+        <div id="iosHint" class="hidden mt-3 text-xs text-silver leading-relaxed border border-white/5 rounded-lg p-3">
+          <p class="font-semibold text-headlight/80 mb-1">On iPhone</p>
+          <p>1. Tap Share → 2. Add to Home Screen → 3. Add</p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="text-center space-y-1 pb-2">
+        <p class="text-xs text-silver">Houston, TX · info.abesttowing@gmail.com</p>
+        <p class="text-xs text-silver">BBB Accredited · A+</p>
+        <p class="text-[11px] text-silver/50">© 2025 A Best Towing</p>
+      </div>
+    </main>
+
+    <!-- PERSISTENT BOTTOM BAR -->
+    <div class="bottom-bar">
+      <button id="locBtn" type="button" class="btn-loc press">
+        <i data-lucide="map-pin" class="w-4 h-4 text-hazard"></i>
+        Location
+      </button>
+      <a href="tel:+18328888885" class="btn-call press">
+        <i data-lucide="phone" class="w-5 h-5"></i>
+        Call (832) 888-8885
+      </a>
+    </div>
+  </div>
+
+  <!-- Soft-ask (9s) -->
+  <div id="softAsk" class="fixed bottom-0 inset-x-0 max-w-lg mx-auto z-[60] p-4" style="padding-bottom: max(1rem, env(safe-area-inset-bottom))">
+    <div class="rounded-xl bg-[#1A1B1F] border border-hazard/25 p-4 shadow-xl">
+      <p class="text-sm font-bold text-headlight">One quiet reminder?</p>
+      <p class="text-xs text-silver mt-1 leading-relaxed">A single seasonal note before peak weather. No spam.</p>
+      <div class="flex gap-2 mt-3">
+        <button id="softAskYes" type="button" class="press flex-1 h-10 rounded-lg bg-warn text-white text-sm font-bold">Yes</button>
+        <button id="softAskNo" type="button" class="press flex-1 h-10 rounded-lg border border-silver/20 text-silver text-sm font-semibold">Not now</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+    if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(() => {});
+
+    // Location
+    const locBtn = document.getElementById("locBtn");
+    const locPanel = document.getElementById("locPanel");
+    const coordsText = document.getElementById("coordsText");
+    const smsLink = document.getElementById("smsLink");
+    const locError = document.getElementById("locError");
+    const locLoading = document.getElementById("locLoading");
+
+    locBtn?.addEventListener("click", () => {
+      locPanel.classList.add("open");
+      locError.classList.add("hidden");
+      locLoading.classList.remove("hidden");
+      coordsText.textContent = "";
+      if (!navigator.geolocation) {
+        locLoading.classList.add("hidden");
+        locError.textContent = "Location not supported. Tell dispatch your cross street or mile marker.";
+        locError.classList.remove("hidden");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          locLoading.classList.add("hidden");
+          const lat = pos.coords.latitude.toFixed(6);
+          const lng = pos.coords.longitude.toFixed(6);
+          coordsText.textContent = lat + ", " + lng;
+          smsLink.href = "sms:+18328888885?body=" + encodeURIComponent("My location for A Best Towing: " + lat + ", " + lng);
+        },
+        (err) => {
+          locLoading.classList.add("hidden");
+          locError.classList.remove("hidden");
+          locError.textContent = err.code === 1
+            ? "Permission denied. Tell dispatch your cross street or mile marker."
+            : "No GPS fix. Tell dispatch your cross street or mile marker.";
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
+      );
+    });
+
+    // Install
+    let deferredPrompt = null;
+    const installBtn = document.getElementById("installBtn");
+    const iosHint = document.getElementById("iosHint");
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn?.classList.remove("hidden");
+    });
+    installBtn?.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      installBtn.classList.add("hidden");
+    });
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    if (isIOS && !window.navigator.standalone) iosHint?.classList.remove("hidden");
+
+    // Soft-ask 9s
+    const softAsk = document.getElementById("softAsk");
+    let shown = false;
+    const showSoft = () => {
+      if (shown || localStorage.getItem("abest_notif_asked")) return;
+      if (!("Notification" in window) || Notification.permission !== "default") return;
+      shown = true;
+      softAsk?.classList.add("show");
+    };
+    setTimeout(showSoft, 9000);
+    document.getElementById("softAskNo")?.addEventListener("click", () => {
+      softAsk?.classList.remove("show");
+      localStorage.setItem("abest_notif_asked", "1");
+    });
+    document.getElementById("softAskYes")?.addEventListener("click", async () => {
+      softAsk?.classList.remove("show");
+      localStorage.setItem("abest_notif_asked", "1");
+      const perm = await Notification.requestPermission();
+      if (perm === "granted") {
+        new Notification("A Best Towing", {
+          body: "You’re set. One quiet seasonal reminder — nothing else.",
+          icon: "./icons/icon-192.png"
+        });
+      }
+    });
+  </script>
+</body>
+</html>
