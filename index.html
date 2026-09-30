@@ -1,1 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#14161B" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="description" content="A Best Towing — 24/7 towing & roadside assistance in Houston, TX." />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <title>A Best Towing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    try {
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: "#14161B", canvas: "#F6F7FA", card: "#FFFFFF", line: "#E7E9EF",
+              slate: "#6E7480", coral: "#E8442F", amber: "#E8A226", mint: "#1FA97A",
+              rail: "#14161B", railline: "rgba(255,255,255,0.08)"
+            },
+            fontFamily: {
+              display: ["Barlow Condensed", "system-ui", "sans-serif"],
+              sans: ["Manrope", "system-ui", "sans-serif"],
+              mono: ["JetBrains Mono", "ui-monospace", "monospace"]
+            }
+          }
+        }
+      };
+    } catch (_) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    html, body { height: 100%; overscroll-behavior: none; margin: 0; }
+    body { background: #F6F7FA; color: #14161B; font-family: Manrope, system-ui, sans-serif; }
+    .display { font-family: "Barlow Condensed", system-ui, sans-serif; font-weight: 800; }
+    .mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
 
+    .press { transition: transform .12s ease, opacity .12s ease; }
+    .press:active { transform: scale(.965); opacity: .92; }
+
+    .safe-top { padding-top: max(0.6rem, env(safe-area-inset-top)); }
+    .safe-bot { padding-bottom: env(safe-area-inset-bottom); }
+
+    .card { background: #fff; border-radius: 18px; box-shadow: 0 1px 2px rgba(20,22,27,.04), 0 6px 18px rgba(20,22,27,.06); }
+
+    /* Dark status rail — static, no glow/pulse */
+    .rail { position: sticky; top: 0; z-index: 40; background: #14161B; color: #fff; }
+    .rail-stripe { height: 3px; background: repeating-linear-gradient(-45deg, #E8A226, #E8A226 5px, #14161B 5px, #14161B 10px); }
+    .dot { width: 7px; height: 7px; border-radius: 999px; background: #1FA97A; display: inline-block; }
+
+    /* Screens */
+    .screen { display: none; min-height: calc(100dvh - 8rem); }
+    .screen.active { display: block; animation: screenIn 320ms cubic-bezier(0.22,1,0.36,1); }
+    @keyframes screenIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { .screen.active { animation: none; } .press { transition: none; } }
+
+    .h-strip { display: flex; gap: .6rem; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+    .h-strip::-webkit-scrollbar { display: none; }
+    .h-strip > * { scroll-snap-align: start; flex-shrink: 0; }
+
+    /* Rating ring */
+    .ring-wrap { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
+    .ring { width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(#E8442F 0deg 353deg, #ECEEF3 353deg 360deg); display: flex; align-items: center; justify-content: center; }
+    .ring-inner { width: 57px; height: 57px; border-radius: 50%; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+    /* Dark tab bar — static icons, no glow */
+    .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; max-width: 480px; margin: 0 auto; background: #14161B; border-top: 1px solid rgba(255,255,255,0.08); display: flex; height: calc(60px + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom); }
+    .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: rgba(255,255,255,0.45); font-size: 10px; font-weight: 700; border: none; background: transparent; }
+    .tab.active { color: #E8A226; }
+    .tab svg { width: 21px; height: 21px; }
+
+    .tile { background: #fff; border: 1px solid #E7E9EF; border-radius: 14px; padding: .9rem .6rem; display: flex; flex-direction: column; align-items: center; gap: .4rem; text-decoration: none; color: #14161B; }
+    .tile svg { width: 20px; height: 20px; color: #E8442F; }
+    .tile span { font-size: 11.5px; font-weight: 700; }
+
+    .row { display: flex; align-items: center; gap: .75rem; padding: .85rem 0; border-bottom: 1px solid #E7E9EF; text-decoration: none; color: #14161B; }
+    .row:last-child { border-bottom: none; }
+
+    /* GPS sheet — light, slides up, sits ABOVE tab bar */
+    .backdrop { position: fixed; inset: 0; z-index: 70; background: rgba(15,16,20,.45); opacity: 0; pointer-events: none; transition: opacity 240ms ease; }
+    .backdrop.open { opacity: 1; pointer-events: auto; }
+    .sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 80; max-width: 480px; margin: 0 auto; background: #fff; border-radius: 22px 22px 0 0; padding: .5rem 1.25rem 1.25rem; padding-bottom: max(1.25rem, env(safe-area-inset-bottom)); transform: translateY(105%); transition: transform 280ms cubic-bezier(0.22,1,0.36,1); box-shadow: 0 -8px 30px rgba(20,22,27,.12); }
+    .sheet.open { transform: translateY(0); }
+    .handle { width: 36px; height: 4px; border-radius: 2px; background: #E7E9EF; margin: .4rem auto 1rem; }
+
+    /* Reminder — centered modal, never overlaps the tab bar */
+    #softAskModal { display: none; }
+    #softAskModal.show { display: flex; }
+  </style>
+</head>
+<body class="h-full">
+<div class="min-h-full max-w-[480px] mx-auto relative flex flex-col">
+
+  <!-- STATUS RAIL (dark) -->
+  <header class="rail safe-top">
+    <div class="flex items-center justify-between px-4 h-11">
+      <div class="flex items-center gap-2">
+        <span class="dot"></span>
+        <span class="mono text-[11px] tracking-wide text-white/80">LIVE · Houston</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <img src="./icons/logo.png" alt="" class="h-5 w-5 object-contain" />
+        <span class="mono text-[11px] tracking-wide text-white/60"><span id="unitCount">3</span> units nearby</span>
+      </div>
+    </div>
+    <div class="rail-stripe"></div>
+  </header>
+
+  <main class="flex-1 overflow-y-auto bg-canvas" style="padding-bottom: calc(76px + env(safe-area-inset-bottom))">
+
+    <!-- SOS -->
+    <section id="screen-sos" class="screen active px-4 pt-5 pb-6 space-y-4">
+      <div>
+        <h1 class="display text-[1.7rem] leading-[1.1] text-ink">Stranded in Houston?</h1>
+        <p class="text-slate text-sm mt-0.5">We're already moving.</p>
+      </div>
+
+      <a href="tel:+18328888885" class="press card flex items-center gap-4 p-4 !rounded-2xl" style="background: linear-gradient(135deg, #FF6A4D, #E8442F);">
+        <div class="h-14 w-14 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+          <i data-lucide="phone" class="w-6 h-6 text-white"></i>
+        </div>
+        <div class="text-white">
+          <p class="text-xs font-semibold opacity-90">Tap to call now</p>
+          <p class="mono text-lg font-bold">(832) 888-8885</p>
+        </div>
+      </a>
+
+      <!-- Install nudge — visible up front, not hidden in a tab -->
+      <div id="installNudge" class="card p-3.5 flex items-center gap-3">
+        <div class="h-9 w-9 rounded-xl bg-amber/15 flex items-center justify-center shrink-0">
+          <i data-lucide="download" class="w-4.5 h-4.5 text-amber"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-bold text-ink">Save us before you need us again</p>
+          <p class="text-xs text-slate">One tap — works next time too</p>
+        </div>
+        <button type="button" id="installBtn" class="press shrink-0 text-xs font-bold text-coral px-2">Add</button>
+      </div>
+
+      <!-- Rating + stats -->
+      <div class="card p-4 flex items-center gap-4">
+        <div class="ring-wrap"><div class="ring"><div class="ring-inner">
+          <span class="text-[1.05rem] font-extrabold text-ink leading-none">4.9</span>
+          <span class="text-[9px] text-slate font-semibold">/5</span>
+        </div></div></div>
+        <div class="flex-1 grid grid-cols-2 gap-y-2 gap-x-2 text-[13px]">
+          <div class="flex items-center gap-1.5"><i data-lucide="message-circle" class="w-3.5 h-3.5 text-slate"></i><span class="font-semibold text-ink">120 Reviews</span></div>
+          <div class="flex items-center gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-slate"></i><span class="font-semibold text-ink">BBB A+</span></div>
+          <div class="flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5 text-slate"></i><span class="font-semibold text-ink">24/7</span></div>
+          <div class="flex items-center gap-1.5"><i data-lucide="truck" class="w-3.5 h-3.5 text-slate"></i><span class="font-semibold text-ink">Flatbed+</span></div>
+        </div>
+      </div>
+
+      <!-- Position -->
+      <button type="button" id="posCard" class="press card w-full text-left p-3.5 flex items-center justify-between">
+        <div>
+          <p class="text-[10px] font-bold tracking-wide text-slate uppercase">Your position</p>
+          <p id="posCoords" class="mono text-sm text-ink mt-1">Tap to get GPS</p>
+        </div>
+        <i data-lucide="crosshair" class="w-5 h-5 text-coral shrink-0"></i>
+      </button>
+
+      <div>
+        <p class="text-sm font-bold text-ink mb-2">Services</p>
+        <div class="grid grid-cols-4 gap-2">
+          <a href="tel:+18328888885" class="tile press"><i data-lucide="truck"></i><span>Flatbed</span></a>
+          <a href="tel:+18328888885" class="tile press"><i data-lucide="zap"></i><span>Jump</span></a>
+          <a href="tel:+18328888885" class="tile press"><i data-lucide="key"></i><span>Lockout</span></a>
+          <a href="tel:+18328888885" class="tile press"><i data-lucide="circle-dot"></i><span>Tire</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRACK -->
+    <section id="screen-track" class="screen px-4 pt-6 pb-6 space-y-4">
+      <h2 class="display text-2xl text-ink">Track</h2>
+      <div class="card p-5 text-center">
+        <div class="mx-auto h-12 w-12 rounded-full bg-canvas flex items-center justify-center mb-3">
+          <i data-lucide="map" class="w-6 h-6 text-slate"></i>
+        </div>
+        <p class="text-sm font-bold text-ink mb-1">No active job on this phone</p>
+        <p class="text-xs text-slate mb-4 leading-relaxed">Call or text us first. Once a driver is assigned, they'll share their ETA with you directly.</p>
+        <a href="tel:+18328888885" class="press inline-flex items-center gap-2 h-11 px-5 rounded-xl text-white text-sm font-bold" style="background:#E8442F">
+          <i data-lucide="phone" class="w-4 h-4"></i> Call to start a job
+        </a>
+      </div>
+      <div class="card p-4">
+        <p class="text-[10px] font-bold tracking-wide text-slate uppercase mb-1.5">Typical response</p>
+        <p class="mono text-xl text-ink font-bold">10–20 min</p>
+        <p class="text-xs text-slate mt-0.5">Houston metro · traffic dependent</p>
+      </div>
+    </section>
+
+    <!-- FIX -->
+    <section id="screen-fix" class="screen px-4 pt-6 pb-6">
+      <h2 class="display text-2xl text-ink mb-1">Fix</h2>
+      <p class="text-sm text-slate mb-4">Tap a service to call.</p>
+      <div class="card px-4">
+        <a href="tel:+18328888885" class="row press"><i data-lucide="truck" class="w-5 h-5 text-coral shrink-0"></i><div class="flex-1"><p class="text-sm font-bold">Flatbed Tow</p><p class="text-xs text-slate">Cars, SUVs, light trucks</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-slate/50"></i></a>
+        <a href="tel:+18328888885" class="row press"><i data-lucide="zap" class="w-5 h-5 text-coral shrink-0"></i><div class="flex-1"><p class="text-sm font-bold">Jump Start</p><p class="text-xs text-slate">Dead battery boost</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-slate/50"></i></a>
+        <a href="tel:+18328888885" class="row press"><i data-lucide="key" class="w-5 h-5 text-coral shrink-0"></i><div class="flex-1"><p class="text-sm font-bold">Lockout</p><p class="text-xs text-slate">Keys locked inside</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-slate/50"></i></a>
+        <a href="tel:+18328888885" class="row press"><i data-lucide="circle-dot" class="w-5 h-5 text-coral shrink-0"></i><div class="flex-1"><p class="text-sm font-bold">Flat Tire</p><p class="text-xs text-slate">Change or spare mount</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-slate/50"></i></a>
+        <a href="tel:+18328888885" class="row press"><i data-lucide="container" class="w-5 h-5 text-coral shrink-0"></i><div class="flex-1"><p class="text-sm font-bold">Heavy Duty</p><p class="text-xs text-slate">Trucks, equipment</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-slate/50"></i></a>
+        <a href="tel:+18328888885" class="row press"><i data-lucide="bike" class="w-5 h-5 text-coral shrink-0"></i><div class="flex-1"><p class="text-sm font-bold">Motorcycle</p><p class="text-xs text-slate">Secure bike transport</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-slate/50"></i></a>
+        <a href="tel:+18328888885" class="row press"><i data-lucide="ship" class="w-5 h-5 text-coral shrink-0"></i><div class="flex-1"><p class="text-sm font-bold">RV & Boat</p><p class="text-xs text-slate">Specialty recovery</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-slate/50"></i></a>
+        <a href="tel:+18328888885" class="row press"><i data-lucide="fuel" class="w-5 h-5 text-coral shrink-0"></i><div class="flex-1"><p class="text-sm font-bold">Fuel Delivery</p><p class="text-xs text-slate">Gas or diesel drop</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-slate/50"></i></a>
+      </div>
+    </section>
+
+    <!-- MORE -->
+    <section id="screen-more" class="screen px-4 pt-6 pb-6">
+      <h2 class="display text-2xl text-ink mb-4">More</h2>
+      <div class="card px-4 mb-4">
+        <button type="button" id="installRow" class="row press w-full text-left"><i data-lucide="download" class="w-5 h-5 text-coral shrink-0"></i><div class="flex-1"><p class="text-sm font-bold">Add to Home Screen</p><p class="text-xs text-slate">One tap next time you need a tow</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-slate/50"></i></button>
+        <div id="iosHint" class="hidden pb-3 text-xs text-slate leading-relaxed">iPhone: Share → Add to Home Screen → Add</div>
+      </div>
+
+      <p class="text-[10px] font-bold tracking-wide text-slate uppercase mb-2">Reviews</p>
+      <div class="space-y-2.5 mb-5">
+        <div class="card p-3.5">
+          <div class="flex gap-0.5 text-amber mb-1.5"><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i></div>
+          <p class="text-sm text-ink/90 leading-snug">"Omar showed up in 10 minutes when others gave a 2-hour ETA."</p>
+          <p class="mt-1.5 text-[11px] text-slate">Eric G.</p>
+        </div>
+        <div class="card p-3.5">
+          <div class="flex gap-0.5 text-amber mb-1.5"><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i></div>
+          <p class="text-sm text-ink/90 leading-snug">"He did what he said — 10 minutes. Safe. Recommend to all."</p>
+          <p class="mt-1.5 text-[11px] text-slate">Natasha L.</p>
+        </div>
+        <div class="card p-3.5">
+          <div class="flex gap-0.5 text-amber mb-1.5"><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i></div>
+          <p class="text-sm text-ink/90 leading-snug">"Two tows in 5 days. Fair price. 100% recommend."</p>
+          <p class="mt-1.5 text-[11px] text-slate">Peter I.</p>
+        </div>
+      </div>
+
+      <div class="card p-4 space-y-2 text-sm mb-4">
+        <p class="flex justify-between"><span class="text-slate">Hours</span><span class="mono">24/7</span></p>
+        <p class="flex justify-between"><span class="text-slate">Phone</span><a href="tel:+18328888885" class="mono text-coral">(832) 888-8885</a></p>
+        <p class="flex justify-between gap-2"><span class="text-slate shrink-0">Email</span><a href="mailto:info.abesttowing@gmail.com" class="text-coral text-right text-xs break-all">info.abesttowing@gmail.com</a></p>
+        <p class="flex justify-between"><span class="text-slate">Area</span><span>Houston, TX</span></p>
+        <p class="flex justify-between"><span class="text-slate">BBB</span><span class="mono">A+</span></p>
+      </div>
+      <div class="flex items-center justify-center gap-5">
+        <img src="./photos/google-badge.png" alt="Google Guaranteed" class="h-9 w-auto object-contain opacity-70" />
+        <img src="./photos/top-rated.png" alt="Top Rated" class="h-9 w-auto object-contain opacity-70" />
+      </div>
+      <p class="text-center text-[11px] text-slate/60 mt-4">© 2025 A Best Towing</p>
+    </section>
+  </main>
+
+  <!-- DARK TAB BAR -->
+  <nav class="tab-bar" role="tablist" aria-label="Main">
+    <button type="button" class="tab active" data-screen="sos" role="tab" aria-selected="true"><i data-lucide="siren"></i><span>SOS</span></button>
+    <button type="button" class="tab" data-screen="track" role="tab" aria-selected="false"><i data-lucide="map"></i><span>Track</span></button>
+    <button type="button" class="tab" data-screen="fix" role="tab" aria-selected="false"><i data-lucide="wrench"></i><span>Fix</span></button>
+    <button type="button" class="tab" data-screen="more" role="tab" aria-selected="false"><i data-lucide="menu"></i><span>More</span></button>
+  </nav>
+</div>
+
+<!-- GPS sheet -->
+<div id="backdrop" class="backdrop"></div>
+<div id="locSheet" class="sheet" role="dialog" aria-modal="true" aria-label="Your location">
+  <div class="handle"></div>
+  <p class="text-[10px] font-bold tracking-wide text-slate uppercase mb-2">GPS coordinates</p>
+  <p id="sheetCoords" class="mono text-lg text-ink break-all min-h-[1.6rem]">—</p>
+  <p id="sheetAcc" class="mono text-xs text-slate mt-1"></p>
+  <p id="sheetStatus" class="text-xs text-slate mt-2">Get a fix, then text it to us — or just call.</p>
+  <div class="flex gap-2 mt-4">
+    <button type="button" id="getFix" class="press flex-1 h-11 rounded-xl border border-line text-sm font-bold text-ink flex items-center justify-center gap-1.5"><i data-lucide="crosshair" class="w-4 h-4 text-coral"></i> Get fix</button>
+    <a id="smsLoc" href="sms:+18328888885" class="press flex-1 h-11 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-1.5" style="background:#E8442F"><i data-lucide="message-square" class="w-4 h-4"></i> Text</a>
+  </div>
+</div>
+
+<!-- Reminder — centered modal, can never overlap the tab bar -->
+<div id="softAskModal" class="fixed inset-0 z-[90] items-center justify-center bg-black/40 px-6">
+  <div class="card p-5 w-full max-w-xs">
+    <p class="text-sm font-bold text-ink">One quiet reminder?</p>
+    <p class="text-xs text-slate mt-1 leading-relaxed">A single seasonal note before peak weather. No spam.</p>
+    <div class="flex gap-2 mt-4">
+      <button id="softYes" type="button" class="press flex-1 h-10 rounded-xl text-white text-sm font-bold" style="background:#E8442F">Yes</button>
+      <button id="softNo" type="button" class="press flex-1 h-10 rounded-xl border border-line text-slate text-sm font-semibold">Not now</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});
+  try { if (typeof lucide !== "undefined") lucide.createIcons(); } catch (_) {}
+
+  const buzz = (p=8) => { try { navigator.vibrate?.(p); } catch(_){} };
+  document.addEventListener("pointerdown", (e) => { if (e.target.closest(".press")) buzz(8); }, { passive: true });
+
+  // Tabs
+  const screens = ["sos","track","fix","more"];
+  function showScreen(id) {
+    screens.forEach(s => document.getElementById("screen-"+s)?.classList.toggle("active", s===id));
+    document.querySelectorAll(".tab").forEach(t => {
+      const on = t.dataset.screen === id;
+      t.classList.toggle("active", on);
+      t.setAttribute("aria-selected", on ? "true" : "false");
+    });
+  }
+  document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => showScreen(t.dataset.screen)));
+
+  // GPS
+  const backdrop = document.getElementById("backdrop");
+  const sheet = document.getElementById("locSheet");
+  const posCoords = document.getElementById("posCoords");
+  const sheetCoords = document.getElementById("sheetCoords");
+  const sheetAcc = document.getElementById("sheetAcc");
+  const sheetStatus = document.getElementById("sheetStatus");
+  const smsLoc = document.getElementById("smsLoc");
+
+  function openSheet() { backdrop.classList.add("open"); sheet.classList.add("open"); document.body.style.overflow = "hidden"; }
+  function closeSheet() { backdrop.classList.remove("open"); sheet.classList.remove("open"); document.body.style.overflow = ""; }
+  document.getElementById("posCard")?.addEventListener("click", openSheet);
+  backdrop?.addEventListener("click", closeSheet);
+
+  function applyCoords(lat, lng, acc) {
+    const str = lat + ", " + lng;
+    posCoords.textContent = str;
+    sheetCoords.textContent = str;
+    if (acc != null) sheetAcc.textContent = "±" + acc + " m";
+    smsLoc.href = "sms:+18328888885?body=" + encodeURIComponent("I need a tow in Houston. My location: " + str);
+    sheetStatus.textContent = "Ready. Text these to us, or call.";
+  }
+  document.getElementById("getFix")?.addEventListener("click", () => {
+    sheetStatus.textContent = "Getting GPS fix…";
+    if (!navigator.geolocation) { sheetStatus.textContent = "GPS not available. Call us — we'll find you."; return; }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => { applyCoords(pos.coords.latitude.toFixed(6), pos.coords.longitude.toFixed(6), Math.round(pos.coords.accuracy)); buzz([10,30,10]); },
+      (err) => { sheetStatus.textContent = err.code === 1 ? "Permission denied. Call us — we'll find you." : "No fix. Call us — we'll find you."; },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
+    );
+  });
+
+  // Install — nudge on SOS screen + row in More
+  let deferred = null;
+  window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferred = e; });
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  async function triggerInstall() {
+    if (deferred) { deferred.prompt(); await deferred.userChoice; deferred = null; }
+    else if (isIOS) { document.getElementById("iosHint")?.classList.remove("hidden"); showScreen("more"); }
+    else { alert("Use your browser menu → Install / Add to Home Screen"); }
+  }
+  document.getElementById("installBtn")?.addEventListener("click", triggerInstall);
+  document.getElementById("installRow")?.addEventListener("click", triggerInstall);
+  if (localStorage.getItem("abest_install_dismissed") === "1") document.getElementById("installNudge")?.classList.add("hidden");
+
+  // Reminder — centered modal, 9s delay, never on load
+  const softAskModal = document.getElementById("softAskModal");
+  setTimeout(() => {
+    if (localStorage.getItem("abest_notif_asked")) return;
+    if (!("Notification" in window) || Notification.permission !== "default") return;
+    softAskModal.classList.add("show");
+  }, 9000);
+  document.getElementById("softNo")?.addEventListener("click", () => { softAskModal.classList.remove("show"); localStorage.setItem("abest_notif_asked","1"); });
+  document.getElementById("softYes")?.addEventListener("click", async () => {
+    softAskModal.classList.remove("show"); localStorage.setItem("abest_notif_asked","1");
+    const p = await Notification.requestPermission();
+    if (p === "granted") new Notification("A Best Towing", { body: "You're set. One seasonal reminder — nothing else.", icon: "./icons/icon-192.png" });
+  });
+
+  // Unit count — subtle roll, once
+  const uc = document.getElementById("unitCount");
+  if (uc) {
+    const t0 = performance.now();
+    const tick = (t) => { const p = Math.min(1, (t - t0) / 400); uc.textContent = Math.round(3 * (1 - Math.pow(1-p, 3))); if (p < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  }
+</script>
+</body>
+</html>
